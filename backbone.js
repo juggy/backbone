@@ -732,7 +732,8 @@
 
     // Get the cross-browser normalized URL fragment.
     getFragment : function(loc) {
-      return (loc || window.location).hash.replace(hashStrip, '');
+      matches = (loc || window.location).href.match( /^[^#]*#?(.*)$/)
+      return matches.length > 1 ? matches[1] : ""
     },
 
     // Start the hash change handling, returning `true` if the current URL matches
@@ -763,9 +764,6 @@
     // calls `loadUrl`, normalizing across the hidden iframe.
     checkUrl : function() {
       var current = this.getFragment();
-      if (current == this.fragment && this.iframe) {
-        current = this.getFragment(this.iframe.location);
-      }
       if (current == this.fragment ||
           current == decodeURIComponent(this.fragment)) return false;
       if (this.iframe) {
@@ -793,7 +791,6 @@
     // a `hashchange` event.
     saveLocation : function(fragment) {
       fragment = (fragment || '').replace(hashStrip, '');
-      if (this.fragment == fragment) return;
       window.location.hash = this.fragment = fragment;
       if (this.iframe && (fragment != this.getFragment(this.iframe.location))) {
         this.iframe.document.open().close();
